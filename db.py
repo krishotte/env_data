@@ -17,8 +17,11 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
 
+    """
     def __repr__(self):
-        return f'User(id={self.id}, name={self.name})'
+        # return f'User(id={self.id}, name={self.name})'
+        return {"id": str(self.id), "name": self.name}
+    """
 
 
 class DemoData(Base):
@@ -39,9 +42,10 @@ User.__table__
 Base.metadata.create_all(engine)
 
 session = Session()
+"""
 user1 = User(name='oliver')
 session.add(user1)
-
+"""
 us_ = session.query(User).all()
 print('users: ', us_)
 #db.connect()
@@ -50,4 +54,23 @@ session.commit()
 session.close()
 
 
+def read_users():
+    session = Session()
+    users = session.query(User).all()
+    # session.commit()
+    session.close()
+
+    users_list = []
+    for user in users:
+        users_list.append({"id": user.id, "name": user.name})
+
+    return users_list
+
+
+def add_user(name):
+    session = Session()
+    user1 = User(name=name)
+    session.add(user1)
+    session.commit()
+    session.close()
 
