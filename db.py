@@ -2,6 +2,7 @@ import psycopg2
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from datetime import datetime
 
 
 db_string = 'postgresql+psycopg2://pk:herkules@localhost/env_data_db'
@@ -33,8 +34,10 @@ class DemoData(Base):
     temperature = Column(Float, nullable=False)
     humidity = Column(Float, nullable=False)
 
+    """
     def __repr__(self):
         return f'data: {self.timestamp}; '
+    """
 
 
 User.__table__
@@ -74,3 +77,15 @@ def add_user(name):
     session.commit()
     session.close()
 
+
+def add_demo_data(battery, temperature, humidity):
+    session = Session()
+    data1 = DemoData(
+        timestamp=datetime.utcnow(),
+        battery=battery,
+        temperature=temperature,
+        humidity=humidity
+    )
+    session.add(data1)
+    session.commit()
+    session.close()
