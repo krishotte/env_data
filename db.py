@@ -119,3 +119,8 @@ def env_data_stat():
     }
 
     return stats
+
+
+def drop_env_data(really=False):
+    if really:
+        EnvData.__table__.drop(engine)
