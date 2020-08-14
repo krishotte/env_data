@@ -3,10 +3,20 @@ from sqlalchemy import create_engine, Column, Integer, String, DateTime, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
+from ini import Ini2
 
+default_config = {
+    'token': '',
+    'db_string': '',
+}
 
-db_string = 'postgresql+psycopg2://pk:herkules@localhost/env_data_db'
-# db_string = 'postgresql+psycopg2://pk:herkules@10.147.20.112:5432/env_data_db'
+loaded_config = Ini2().read('conf.json')
+
+config = {**default_config, **loaded_config}
+print(f'config: {config}')
+
+db_string = config['db_string']
+
 Base = declarative_base()
 engine = create_engine(db_string, echo=True)
 Session = sessionmaker(bind=engine)
@@ -25,14 +35,15 @@ class User(Base):
     """
 
 
-class DemoData(Base):
-    __tablename__ = 'demo_data'
+class EnvData(Base):
+    __tablename__ = 'env_data'
 
     id = Column(Integer, primary_key=True)
     timestamp = Column(DateTime, nullable=False)
     battery = Column(Float, nullable=False)
     temperature = Column(Float, nullable=False)
     humidity = Column(Float, nullable=False)
+    pressure = Column(Float, nullable=False)
 
     """
     def __repr__(self):
@@ -40,7 +51,7 @@ class DemoData(Base):
     """
 
 
-User.__table__
+# User.__table__
 
 Base.metadata.create_all(engine)
 
@@ -78,14 +89,33 @@ def add_user(name):
     session.close()
 
 
-def add_demo_data(battery, temperature, humidity):
+def add_env_data(battery, temperature, humidity, pressure):
     session = Session()
-    data1 = DemoData(
+    data1 = EnvData(
         timestamp=datetime.utcnow(),
         battery=battery,
         temperature=temperature,
-        humidity=humidity
+        humidity=humidity,
+        pressure=pressure
     )
     session.add(data1)
     session.commit()
     session.close()
+
+
+def env_data_stat():
+    session = Session()
+    env_datas = session.query(EnvData).all()
+    # session.commit()
+    session.close()
+
+    first_timestamp = env_datas[0].timestamp
+    last_timestamp = env_datas[-1].timestamp
+
+    stats = {
+        'start_time': first_timestamp,
+        'stop_time': last_timestamp,
+        'data_length': len(env_datas),
+    }
+
+    return stats
