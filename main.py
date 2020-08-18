@@ -44,7 +44,7 @@ def users():
             return json.dumps({'result': False})
 
 
-@app.route('/envdata', methods=['POST'])
+@app.route('/envdata', methods=['GET', 'POST'])
 def env_data_write():
     if connexion.request.method == 'POST':
         # print(f'POST request headers: {connexion.request.headers}')
@@ -66,6 +66,14 @@ def env_data_write():
         except Exception:
             print('not correct data')
             return json.dumps({'result': False})
+
+    if connexion.request.method == 'GET':
+        return jsonify(db.env_data_get_all())
+
+
+@app.route('/envdata-last', methods=['GET'])
+def env_data_last():
+    return jsonify(db.env_data_get_last())
 
 
 @app.route('/envdata-stat', methods=['GET'])

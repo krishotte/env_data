@@ -121,6 +121,39 @@ def env_data_stat():
     return stats
 
 
+def env_data_get_all():
+    """
+    get all data from env_data table
+    :return: list of tuples
+    """
+    data = session.query(
+        EnvData.id,
+        EnvData.timestamp,
+        EnvData.battery,
+        EnvData.temperature,
+        EnvData.humidity,
+        EnvData.pressure).all()
+    """
+    print(f'all data:')
+    for each in data:
+        print(f'   {each}')
+    """
+    return data
+
+
+def env_data_get_last():
+    data = session.query(
+        EnvData.id,
+        EnvData.timestamp,
+        EnvData.battery,
+        EnvData.temperature,
+        EnvData.humidity,
+        EnvData.pressure)[-1]
+
+    # print(data)
+    return data
+
+
 def drop_env_data(really=False):
     if really:
         EnvData.__table__.drop(engine)

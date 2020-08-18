@@ -34,7 +34,7 @@ def create_user(name):
 
 
 def create_demo_data(battery, temp, humidity, pressure):
-    url = "http://localhost:5000/envdata"
+    url = "http://192.168.0.14:5000/envdata"
     payload = {
         # "token": token,
         "battery": battery,
